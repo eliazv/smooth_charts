@@ -101,6 +101,8 @@ SmoothLineChart(
 SmoothLineChart(
   points: [line1Points, line2Points],
   colors: [Colors.teal, Colors.deepOrange],
+  showTooltipForAllLines: true,
+  lineTooltipLabelBuilder: (i) => i == 0 ? 'Current' : 'Projection',
   horizontalLineAt: 500,           // dashed budget/target line
   keepHorizontalLineInView: true,
   yLabelFormatter: (v) => '\$${v.toStringAsFixed(0)}',
@@ -113,39 +115,41 @@ SmoothLineChart(
 
 ### `SmoothPieChartItem`
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | `String` | Unique identifier |
-| `value` | `double` | Raw value (percentages computed automatically) |
-| `color` | `Color` | Base slice color |
-| `label` | `String` | Accessibility label |
-| `icon` | `Widget?` | Optional icon inside the badge |
+| Field   | Type      | Description                                    |
+| ------- | --------- | ---------------------------------------------- |
+| `id`    | `String`  | Unique identifier                              |
+| `value` | `double`  | Raw value (percentages computed automatically) |
+| `color` | `Color`   | Base slice color                               |
+| `label` | `String`  | Accessibility label                            |
+| `icon`  | `Widget?` | Optional icon inside the badge                 |
 
 ### `SmoothPieChart`
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `items` | `List<SmoothPieChartItem>` | required | Chart data |
-| `selectedId` | `String?` | — | Controlled highlight |
-| `onItemSelected` | `void Function(String, SmoothPieChartItem)?` | — | Tap callback |
-| `onItemDeselected` | `void Function()?` | — | Deselect callback |
-| `centerColor` | `Color?` | surface | Center hole fill |
-| `largeSizeBreakpoint` | `double` | `700` | Width to render large variant |
+| Parameter             | Type                                         | Default  | Description                   |
+| --------------------- | -------------------------------------------- | -------- | ----------------------------- |
+| `items`               | `List<SmoothPieChartItem>`                   | required | Chart data                    |
+| `selectedId`          | `String?`                                    | —        | Controlled highlight          |
+| `onItemSelected`      | `void Function(String, SmoothPieChartItem)?` | —        | Tap callback                  |
+| `onItemDeselected`    | `void Function()?`                           | —        | Deselect callback             |
+| `centerColor`         | `Color?`                                     | surface  | Center hole fill              |
+| `largeSizeBreakpoint` | `double`                                     | `700`    | Width to render large variant |
 
 ### `SmoothLineChart`
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `points` | `List<List<ChartPair>>` | required | One list per line |
-| `color` | `Color?` | primary | Primary line color |
-| `colors` | `List<Color>` | `[]` | Per-line colors |
-| `isCurved` | `bool` | `false` | Smooth bezier curves |
-| `endDate` | `DateTime?` | now | Reference for x-axis labels |
-| `horizontalLineAt` | `double?` | — | Dashed reference line |
-| `verticalLineAt` | `double?` | — | Dashed reference line |
-| `yLabelFormatter` | `String Function(double)?` | compact | Y-axis formatter |
-| `xLabelFormatter` | `String Function(DateTime)?` | "Mar 15" | X-axis formatter |
-| `tooltipFormatter` | `String Function(DateTime, double)?` | date + value | Tooltip text |
+| Parameter                 | Type                                 | Default      | Description                               |
+| ------------------------- | ------------------------------------ | ------------ | ----------------------------------------- |
+| `points`                  | `List<List<ChartPair>>`              | required     | One list per line                         |
+| `color`                   | `Color?`                             | primary      | Primary line color                        |
+| `colors`                  | `List<Color>`                        | `[]`         | Per-line colors                           |
+| `isCurved`                | `bool`                               | `false`      | Smooth bezier curves                      |
+| `endDate`                 | `DateTime?`                          | now          | Reference for x-axis labels               |
+| `horizontalLineAt`        | `double?`                            | —            | Dashed reference line                     |
+| `verticalLineAt`          | `double?`                            | —            | Dashed reference line                     |
+| `showTooltipForAllLines`  | `bool`                               | `false`      | Show one tooltip row for each line        |
+| `lineTooltipLabelBuilder` | `String Function(int)?`              | —            | Custom labels for multi-line tooltip rows |
+| `yLabelFormatter`         | `String Function(double)?`           | compact      | Y-axis formatter                          |
+| `xLabelFormatter`         | `String Function(DateTime)?`         | "Mar 15"     | X-axis formatter                          |
+| `tooltipFormatter`        | `String Function(DateTime, double)?` | date + value | Tooltip text                              |
 
 ## Utilities
 

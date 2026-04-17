@@ -26,6 +26,9 @@ class _HomePage extends StatefulWidget {
 
 class _HomePageState extends State<_HomePage> {
   String? _selectedPieId;
+  int _pieReplayToken = 0;
+  int _lineReplayToken = 0;
+  int _multiLineReplayToken = 0;
 
   static final _pieItems = [
     SmoothPieChartItem(
@@ -67,16 +70,43 @@ class _HomePageState extends State<_HomePage> {
 
   static final _linePoints = [
     [
-      for (int i = 0; i <= 30; i++)
-        ChartPair(i.toDouble(), _mockSpending(i)),
+      for (int i = 0; i <= 30; i++) ChartPair(i.toDouble(), _mockSpending(i)),
     ],
   ];
 
   static double _mockSpending(int day) {
     final base = [
-      0, 45, 45, 120, 120, 120, 200, 200, 265, 265, 310,
-      310, 380, 430, 430, 430, 510, 510, 580, 640, 640,
-      700, 700, 760, 760, 820, 870, 870, 920, 960, 1010,
+      0,
+      45,
+      45,
+      120,
+      120,
+      120,
+      200,
+      200,
+      265,
+      265,
+      310,
+      310,
+      380,
+      430,
+      430,
+      430,
+      510,
+      510,
+      580,
+      640,
+      640,
+      700,
+      700,
+      760,
+      760,
+      820,
+      870,
+      870,
+      920,
+      960,
+      1010,
     ];
     return base[day].toDouble();
   }
@@ -91,8 +121,26 @@ class _HomePageState extends State<_HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Pie chart ──────────────────────────────────────
-            const Text('Pie Chart',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Pie Chart',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _pieReplayToken++;
+                      _selectedPieId = null;
+                    });
+                  },
+                  icon: const Icon(Icons.replay),
+                  label: const Text('Replay'),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             if (_selectedPieId != null)
               Text('Selected: $_selectedPieId',
@@ -100,6 +148,7 @@ class _HomePageState extends State<_HomePage> {
             const SizedBox(height: 16),
             Center(
               child: SmoothPieChart(
+                key: ValueKey('pie_replay_$_pieReplayToken'),
                 items: _pieItems,
                 selectedId: _selectedPieId,
                 onItemSelected: (id, _) => setState(() => _selectedPieId = id),
@@ -110,10 +159,24 @@ class _HomePageState extends State<_HomePage> {
             const SizedBox(height: 40),
 
             // ── Line chart ─────────────────────────────────────
-            const Text('Line Chart',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Line Chart',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => setState(() => _lineReplayToken++),
+                  icon: const Icon(Icons.replay),
+                  label: const Text('Replay'),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             SmoothLineChart(
+              key: ValueKey('line_replay_$_lineReplayToken'),
               points: _linePoints,
               color: Theme.of(context).colorScheme.primary,
               isCurved: true,
@@ -125,10 +188,24 @@ class _HomePageState extends State<_HomePage> {
             const SizedBox(height: 40),
 
             // ── Multi-line ─────────────────────────────────────
-            const Text('Multi-line Chart',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Multi-line Chart',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => setState(() => _multiLineReplayToken++),
+                  icon: const Icon(Icons.replay),
+                  label: const Text('Replay'),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             SmoothLineChart(
+              key: ValueKey('multi_line_replay_$_multiLineReplayToken'),
               points: [
                 _linePoints[0],
                 [
@@ -138,6 +215,12 @@ class _HomePageState extends State<_HomePage> {
               ],
               colors: [Colors.teal, Colors.deepOrange],
               yLabelFormatter: (v) => '\$${v.toStringAsFixed(0)}',
+              showTooltipForAllLines: true,
+              lineTooltipLabelBuilder: (lineIndex) {
+                if (lineIndex == 0) return 'Current';
+                if (lineIndex == 1) return 'Projection';
+                return 'Line ${lineIndex + 1}';
+              },
             ),
           ],
         ),

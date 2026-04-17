@@ -45,6 +45,8 @@ class SmoothLineChart extends StatelessWidget {
     this.yLabelFormatter,
     this.xLabelFormatter,
     this.tooltipFormatter,
+    this.showTooltipForAllLines = false,
+    this.lineTooltipLabelBuilder,
   }) : super(key: key);
 
   /// One inner list = one line on the chart.
@@ -90,6 +92,14 @@ class SmoothLineChart extends StatelessWidget {
   /// Receives (date, value).
   final String Function(DateTime date, double value)? tooltipFormatter;
 
+  /// When true, shows one tooltip row per visible line at touched x.
+  /// When false, only the first line tooltip is shown.
+  final bool showTooltipForAllLines;
+
+  /// Optional label builder used in multi-line tooltips.
+  /// Defaults to "Line 1", "Line 2", ...
+  final String Function(int lineIndex)? lineTooltipLabelBuilder;
+
   // ── helpers ──────────────────────────────────────────────────────────
 
   static String _defaultY(double v) {
@@ -100,8 +110,18 @@ class SmoothLineChart extends StatelessWidget {
 
   static String _defaultDate(DateTime d) {
     const m = [
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${m[d.month - 1]} ${d.day}';
   }
@@ -139,7 +159,12 @@ class SmoothLineChart extends StatelessWidget {
       .toList();
 
   ChartPair _max(List<List<ChartPair>> lists) {
-    var m = ChartPair(0, amountBefore != 0 && lists.isNotEmpty && lists[0].isNotEmpty ? lists[0][0].y : 0);
+    var m = ChartPair(
+      0,
+      amountBefore != 0 && lists.isNotEmpty && lists[0].isNotEmpty
+          ? lists[0][0].y
+          : 0,
+    );
     for (final l in lists) {
       for (final p in l) {
         if (p.x > m.x) m.x = p.x;
@@ -156,7 +181,12 @@ class SmoothLineChart extends StatelessWidget {
   }
 
   ChartPair _min(List<List<ChartPair>> lists) {
-    var m = ChartPair(0, amountBefore != 0 && lists.isNotEmpty && lists[0].isNotEmpty ? lists[0][0].y : 0);
+    var m = ChartPair(
+      0,
+      amountBefore != 0 && lists.isNotEmpty && lists[0].isNotEmpty
+          ? lists[0][0].y
+          : 0,
+    );
     for (final l in lists) {
       for (final p in l) {
         if (p.x < m.x) m.x = p.x;
@@ -170,10 +200,10 @@ class SmoothLineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final maxP = _max(points);
     final minP = _min(points);
-    final effectiveMax =
-        maxP.y == minP.y ? ChartPair(maxP.x, maxP.y + 1) : maxP;
-    final effectiveColor =
-        color ?? Theme.of(context).colorScheme.primary;
+    final effectiveMax = maxP.y == minP.y
+        ? ChartPair(maxP.x, maxP.y + 1)
+        : maxP;
+    final effectiveColor = color ?? Theme.of(context).colorScheme.primary;
 
     return ClipRect(
       child: Container(
@@ -193,10 +223,13 @@ class SmoothLineChart extends StatelessWidget {
           amountBefore: amountBefore,
           yLabel: yLabelFormatter ?? _defaultY,
           xLabel: xLabelFormatter ?? _defaultDate,
-          tooltip: tooltipFormatter ??
+          tooltip:
+              tooltipFormatter ??
               (d, v) =>
                   '${_defaultDate(d)}\n${(yLabelFormatter ?? _defaultY)(v)}',
           shiftDay: _shiftDay,
+          showTooltipForAllLines: showTooltipForAllLines,
+          lineTooltipLabelBuilder: lineTooltipLabelBuilder,
         ),
       ),
     );
@@ -222,6 +255,8 @@ class _LineChartInternal extends StatefulWidget {
     required this.xLabel,
     required this.tooltip,
     required this.shiftDay,
+    required this.showTooltipForAllLines,
+    required this.lineTooltipLabelBuilder,
   });
 
   final List<List<FlSpot>> spots;
@@ -239,6 +274,8 @@ class _LineChartInternal extends StatefulWidget {
   final String Function(DateTime) xLabel;
   final String Function(DateTime, double) tooltip;
   final DateTime Function(DateTime, int) shiftDay;
+  final bool showTooltipForAllLines;
+  final String Function(int lineIndex)? lineTooltipLabelBuilder;
 
   @override
   State<_LineChartInternal> createState() => _LineChartInternalState();
@@ -271,7 +308,6 @@ class _LineChartInternalState extends State<_LineChartInternal> {
   }
 
   LineChartData _buildData(BuildContext context) {
-    final c = widget.color;
     final maxX = widget.maxPair.x;
     final maxY = widget.maxPair.y;
     final minY = widget.minPair.y;
@@ -295,9 +331,8 @@ class _LineChartInternalState extends State<_LineChartInternal> {
   }
 
   List<LineChartBarData> _bars() => [
-        for (int i = 0; i < widget.spots.length; i++)
-          _barData(widget.spots[i], i),
-      ];
+    for (int i = 0; i < widget.spots.length; i++) _barData(widget.spots[i], i),
+  ];
 
   LineChartBarData _barData(List<FlSpot> spots, int i) {
     final c = widget.colors.isNotEmpty
@@ -322,14 +357,11 @@ class _LineChartInternalState extends State<_LineChartInternal> {
         show: !(minY <= 0 && maxY <= 0),
         gradient: LinearGradient(
           colors: [
-            i == 0
-                ? widget.color.withAlpha(100)
-                : widget.color.withAlpha(1),
+            i == 0 ? widget.color.withAlpha(100) : widget.color.withAlpha(1),
             widget.color.withAlpha(1),
           ],
           begin: Alignment.topCenter,
-          end: Alignment(
-              0, span == 0 ? 1 : maxY.abs() / span),
+          end: Alignment(0, span == 0 ? 1 : maxY.abs() / span),
         ),
       ),
       aboveBarData: BarAreaData(
@@ -338,14 +370,11 @@ class _LineChartInternalState extends State<_LineChartInternal> {
         show: !(minY >= 0 && maxY >= 0) && i == 0,
         gradient: LinearGradient(
           colors: [
-            i == 0
-                ? widget.color.withAlpha(100)
-                : widget.color.withAlpha(1),
+            i == 0 ? widget.color.withAlpha(100) : widget.color.withAlpha(1),
             widget.color.withAlpha(1),
           ],
           begin: Alignment.bottomCenter,
-          end: Alignment(
-              0, span == 0 ? -1 : -(minY.abs() / span)),
+          end: Alignment(0, span == 0 ? -1 : -(minY.abs() / span)),
         ),
       ),
       spots: spots,
@@ -396,20 +425,16 @@ class _LineChartInternalState extends State<_LineChartInternal> {
 
     return FlGridData(
       show: true,
-      verticalInterval:
-          double.parse((xSpan / ticks).toStringAsFixed(5)) == 0 ? 5 : xSpan / ticks,
-      horizontalInterval:
-          double.parse(ySpan.toStringAsFixed(5)) == 0 ? 0.001 : (ySpan / (_isFullScreen ? 7 : 4)).abs(),
-      getDrawingVerticalLine: (_) => FlLine(
-        color: c.withOpacity(0.2),
-        strokeWidth: 2,
-        dashArray: [2, 8],
-      ),
-      getDrawingHorizontalLine: (_) => FlLine(
-        color: c.withOpacity(0.2),
-        strokeWidth: 2,
-        dashArray: [2, 8],
-      ),
+      verticalInterval: double.parse((xSpan / ticks).toStringAsFixed(5)) == 0
+          ? 5
+          : xSpan / ticks,
+      horizontalInterval: double.parse(ySpan.toStringAsFixed(5)) == 0
+          ? 0.001
+          : (ySpan / (_isFullScreen ? 7 : 4)).abs(),
+      getDrawingVerticalLine: (_) =>
+          FlLine(color: c.withOpacity(0.2), strokeWidth: 2, dashArray: [2, 8]),
+      getDrawingHorizontalLine: (_) =>
+          FlLine(color: c.withOpacity(0.2), strokeWidth: 2, dashArray: [2, 8]),
     );
   }
 
@@ -438,14 +463,19 @@ class _LineChartInternalState extends State<_LineChartInternal> {
             return Padding(
               padding: const EdgeInsets.only(top: 8),
               child: MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(textScaler: TextScaler.noScaling),
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: TextScaler.noScaling),
                 child: Text(
                   widget.xLabel(date),
                   style: TextStyle(
                     fontSize: 13,
-                    color: dynamicPastel(context, c, amount: 0.8, inverse: true)
-                        .withOpacity(0.5),
+                    color: dynamicPastel(
+                      context,
+                      c,
+                      amount: 0.8,
+                      inverse: true,
+                    ).withOpacity(0.5),
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
@@ -466,22 +496,28 @@ class _LineChartInternalState extends State<_LineChartInternal> {
             if (value == meta.max || value == meta.min) {
               return const SizedBox.shrink();
             }
-            final inRange = (value == 0) ||
+            final inRange =
+                (value == 0) ||
                 (value < maxY && value > 1 && value < meta.max) ||
                 (value > minY && value < 1 && value > meta.min);
             if (!inRange) return const SizedBox.shrink();
             return Padding(
               padding: const EdgeInsets.only(right: 8),
               child: MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(textScaler: TextScaler.noScaling),
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: TextScaler.noScaling),
                 child: Text(
                   widget.yLabel(value),
                   style: TextStyle(
                     overflow: TextOverflow.fade,
                     fontSize: 13,
-                    color: dynamicPastel(context, c, amount: 0.5, inverse: true)
-                        .withOpacity(0.3),
+                    color: dynamicPastel(
+                      context,
+                      c,
+                      amount: 0.5,
+                      inverse: true,
+                    ).withOpacity(0.3),
                   ),
                   textAlign: TextAlign.end,
                   maxLines: 1,
@@ -507,18 +543,22 @@ class _LineChartInternalState extends State<_LineChartInternal> {
   }
 
   LineTouchData _touchData(BuildContext context) {
-    final primaryColor =
-        lightenPastel(widget.color, amount: 0.3);
+    final primaryBaseColor = widget.colors.isNotEmpty
+        ? widget.colors.first
+        : widget.color;
+    final primaryColor = lightenPastel(primaryBaseColor, amount: 0.3);
+    final scheme = Theme.of(context).colorScheme;
 
     return LineTouchData(
       enabled: widget.enableTouch,
       touchSpotThreshold: 1000,
       getTouchedSpotIndicator: (barData, spotIndexes) {
-        final transparent = barData.color != primaryColor;
+        final shouldHide =
+            !widget.showTooltipForAllLines && barData.color != primaryColor;
         return spotIndexes.map((i) {
-          final lc = transparent
+          final lc = shouldHide
               ? Colors.transparent
-              : widget.color.withOpacity(0.9);
+              : (barData.color ?? widget.color).withOpacity(0.95);
           return TouchedSpotIndicatorData(
             FlLine(color: lc, strokeWidth: 2, dashArray: [2, 2]),
             FlDotData(
@@ -548,18 +588,60 @@ class _LineChartInternalState extends State<_LineChartInternal> {
         _touchedX = x.toInt();
       },
       touchTooltipData: LineTouchTooltipData(
-        getTooltipColor: (_) => widget.color.withOpacity(0.7),
+        getTooltipColor: (_) => widget.showTooltipForAllLines
+            ? scheme.surface.withOpacity(0.95)
+            : widget.color.withOpacity(0.7),
         tooltipRoundedRadius: 8,
         fitInsideVertically: true,
         fitInsideHorizontally: true,
-        tooltipPadding:
-            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        tooltipPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         getTooltipItems: (spots) => spots.map((spot) {
-          if (spot.bar.color != primaryColor) return null;
+          final isPrimaryLine = spot.bar.color == primaryColor;
+          if (!widget.showTooltipForAllLines && !isPrimaryLine) {
+            return null;
+          }
+
           final date = SmoothLineChart._shiftDay(
             widget.endDate ?? DateTime.now(),
             -widget.maxPair.x.toInt() + spot.x.toInt(),
           );
+
+          if (widget.showTooltipForAllLines) {
+            final lineLabel =
+                widget.lineTooltipLabelBuilder?.call(spot.barIndex) ??
+                'Line ${spot.barIndex + 1}';
+            final dateLabel = spot.barIndex == 0
+                ? '${widget.xLabel(date)}\n'
+                : '';
+
+            return LineTooltipItem(
+              dateLabel,
+              TextStyle(
+                color: scheme.onSurface.withOpacity(0.7),
+                fontWeight: FontWeight.w600,
+                fontSize: 11,
+              ),
+              children: [
+                TextSpan(
+                  text: '● ',
+                  style: TextStyle(
+                    color: spot.bar.color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                TextSpan(
+                  text: '$lineLabel: ${widget.yLabel(spot.y)}',
+                  style: TextStyle(
+                    color: scheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            );
+          }
+
           return LineTooltipItem(
             widget.tooltip(date, spot.y),
             const TextStyle(

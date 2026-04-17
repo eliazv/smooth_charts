@@ -76,8 +76,7 @@ class SmoothPieChart extends StatelessWidget {
     final holeOuter = isLarge ? 130.0 : 105.0;
     final holeInner = isLarge ? 110.0 : 80.0;
 
-    final nonZero =
-        items.where((e) => e.value != 0).toList(growable: false);
+    final nonZero = items.where((e) => e.value != 0).toList(growable: false);
     final allZero = nonZero.isEmpty;
     final surface = centerColor ?? Theme.of(context).colorScheme.surface;
 
@@ -94,10 +93,9 @@ class SmoothPieChart extends StatelessWidget {
                     key: const ValueKey('empty'),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .secondaryContainer
-                          .withOpacity(0.3),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.secondaryContainer.withOpacity(0.3),
                     ),
                   )
                 : _SmoothPieChartDisplay(
@@ -125,10 +123,7 @@ class SmoothPieChart extends StatelessWidget {
             child: Container(
               width: holeInner,
               height: holeInner,
-              decoration: BoxDecoration(
-                color: surface,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: surface, shape: BoxShape.circle),
             ),
           ),
         ],
@@ -154,18 +149,35 @@ class _SmoothPieChartDisplay extends StatefulWidget {
   final void Function()? onItemDeselected;
 
   @override
-  State<_SmoothPieChartDisplay> createState() =>
-      _SmoothPieChartDisplayState();
+  State<_SmoothPieChartDisplay> createState() => _SmoothPieChartDisplayState();
 }
 
 class _SmoothPieChartDisplayState extends State<_SmoothPieChartDisplay> {
   int _touchedIndex = -1;
   int _showLabels = 0;
 
+  int _indexFromId(String? id) {
+    if (id == null) return -1;
+    return widget.items.indexWhere((e) => e.id == id);
+  }
+
   @override
   void initState() {
     super.initState();
+    _touchedIndex = _indexFromId(widget.selectedId);
     _startLabelAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SmoothPieChartDisplay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedId != widget.selectedId ||
+        oldWidget.items != widget.items) {
+      final nextIndex = _indexFromId(widget.selectedId);
+      if (nextIndex != _touchedIndex) {
+        setState(() => _touchedIndex = nextIndex);
+      }
+    }
   }
 
   void _startLabelAnimation() async {
@@ -175,18 +187,6 @@ class _SmoothPieChartDisplayState extends State<_SmoothPieChartDisplay> {
       await Future.delayed(const Duration(milliseconds: 70));
       if (mounted) setState(() => _showLabels = i);
     }
-  }
-
-  void _setTouchedIndex(int index) => setState(() => _touchedIndex = index);
-
-  /// Lets the parent highlight a slice by id.
-  void setTouchedById(String? id) {
-    if (id == null) {
-      _setTouchedIndex(-1);
-      return;
-    }
-    final idx = widget.items.indexWhere((e) => e.id == id);
-    _setTouchedIndex(idx);
   }
 
   @override
@@ -201,23 +201,27 @@ class _SmoothPieChartDisplayState extends State<_SmoothPieChartDisplay> {
               setState(() {
                 if (!event.isInterestedForInteractions ||
                     response == null ||
-                    response.touchedSection == null) return;
+                    response.touchedSection == null)
+                  return;
 
-                final idx =
-                    response.touchedSection!.touchedSectionIndex;
+                final idx = response.touchedSection!.touchedSectionIndex;
                 if (event is FlTapDownEvent) {
                   if (_touchedIndex != idx) {
                     _touchedIndex = idx;
-                    widget.onItemSelected
-                        ?.call(widget.items[idx].id, widget.items[idx]);
+                    widget.onItemSelected?.call(
+                      widget.items[idx].id,
+                      widget.items[idx],
+                    );
                   } else {
                     _touchedIndex = -1;
                     widget.onItemDeselected?.call();
                   }
                 } else if (event is FlLongPressMoveUpdate) {
                   _touchedIndex = idx;
-                  widget.onItemSelected
-                      ?.call(widget.items[idx].id, widget.items[idx]);
+                  widget.onItemSelected?.call(
+                    widget.items[idx].id,
+                    widget.items[idx],
+                  );
                 }
               });
             },
@@ -234,8 +238,7 @@ class _SmoothPieChartDisplayState extends State<_SmoothPieChartDisplay> {
   }
 
   List<PieChartSectionData> _buildSections(BuildContext context) {
-    final total =
-        widget.items.fold<double>(0, (sum, e) => sum + e.value.abs());
+    final total = widget.items.fold<double>(0, (sum, e) => sum + e.value.abs());
     double accumulated = 0;
 
     return List.generate(widget.items.length, (i) {
@@ -245,18 +248,19 @@ class _SmoothPieChartDisplayState extends State<_SmoothPieChartDisplay> {
       accumulated += percent;
 
       final prev = i > 0 ? widget.items[i - 1] : null;
-      final next =
-          i < widget.items.length - 1 ? widget.items[i + 1] : null;
+      final next = i < widget.items.length - 1 ? widget.items[i + 1] : null;
       final sameNeighbor =
           prev?.color == item.color || next?.color == item.color;
 
       final color = dynamicPastel(
         context,
         item.color,
-        amountLight: 0.3 +
+        amountLight:
+            0.3 +
             (sameNeighbor && i % 3 == 0 ? 0.2 : 0) +
             (sameNeighbor && i % 3 == 1 ? 0.35 : 0),
-        amountDark: 0.1 +
+        amountDark:
+            0.1 +
             (sameNeighbor && i % 3 == 0 ? 0.2 : 0) +
             (sameNeighbor && i % 3 == 1 ? 0.35 : 0),
       );
@@ -310,8 +314,7 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSmallSlice = percent.abs() < 5;
-    final visible =
-        isSmallSlice ? isTouched : (showLabel || isTouched);
+    final visible = isSmallSlice ? isTouched : (showLabel || isTouched);
     final surface = Theme.of(context).colorScheme.surface;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final labelAbove = totalPercentAccumulated - percent / 2 < 50;
@@ -348,12 +351,10 @@ class _Badge extends StatelessWidget {
                 child: IntrinsicWidth(
                   child: Container(
                     height: 20,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                          color: borderColor, width: 1.5),
+                      border: Border.all(color: borderColor, width: 1.5),
                       color: surface,
                     ),
                     child: Center(
@@ -377,8 +378,12 @@ class _Badge extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: isLight
-                      ? dynamicPastel(context, itemColor,
-                          amountLight: 0.55, amountDark: 0.35)
+                      ? dynamicPastel(
+                          context,
+                          itemColor,
+                          amountLight: 0.55,
+                          amountDark: 0.35,
+                        )
                       : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
