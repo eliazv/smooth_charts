@@ -1,5 +1,5 @@
 name: smooth_charts
-description: "Beautiful animated pie and line charts for Flutter. PinWheel reveal animation, touch interactions, staggered badge labels and gradient fills. Extracted and generalized from the Cashew budgeting app."
+description: "Beautiful animated pie and line charts for Flutter. PinWheel reveal animation, touch interactions, staggered badge labels and gradient fills."
 version: 0.0.1
 homepage: https://github.com/eliazv/smooth_charts
 repository: https://github.com/eliazv/smooth_charts

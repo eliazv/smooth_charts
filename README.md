@@ -5,12 +5,12 @@
 
 Beautiful animated pie and line charts for Flutter.
 
-PinWheel reveal, elastic spring animations, staggered badge labels, touch interactions and gradient fills — extracted and generalized from the [Cashew](https://github.com/jameskokoska/Cashew) budgeting app.
+PinWheel reveal, elastic spring animations, staggered badge labels, touch interactions and gradient fills.
 
 <p align="center">
-  <img src="assets/readme/pie.gif" width="32%" alt="Smooth Pie Chart" />
-  <img src="assets/readme/line.gif" width="32%" alt="Smooth Line Chart" />
-  <img src="assets/readme/multi-line.gif" width="32%" alt="Smooth Multi-line Chart" />
+  <img src="https://raw.githubusercontent.com/eliazv/smooth_charts/master/assets/readme/pie.gif" width="32%" alt="Smooth Pie Chart" />
+  <img src="https://raw.githubusercontent.com/eliazv/smooth_charts/master/assets/readme/line.gif" width="32%" alt="Smooth Line Chart" />
+  <img src="https://raw.githubusercontent.com/eliazv/smooth_charts/master/assets/readme/multi-line.gif" width="32%" alt="Smooth Multi-line Chart" />
 </p>
 
 ## Why this package
