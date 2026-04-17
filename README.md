@@ -13,6 +13,14 @@ PinWheel reveal, elastic spring animations, staggered badge labels, touch intera
 
 ![Smooth Multi-line Chart](assets/readme/multi-line.gif)
 
+## Why this package
+
+Most chart libraries give you low-level primitives. `smooth_charts` gives you:
+
+- Production-ready visual defaults matching modern finance app aesthetics
+- Animations that match the quality bar of native apps
+- Clean widget API — pass your data, get a chart
+
 ## Features
 
 - **Pie chart** with PinWheel reveal animation on load
@@ -25,14 +33,6 @@ PinWheel reveal, elastic spring animations, staggered badge labels, touch intera
 - Multi-line support with per-line colors
 - Adaptive light/dark theme via `dynamicPastel` color utility
 - Fully customizable label formatters
-
-## Why this package
-
-Most chart libraries give you low-level primitives. `smooth_charts` gives you:
-
-- Production-ready visual defaults matching modern finance app aesthetics
-- Animations that match the quality bar of native apps
-- Clean widget API — pass your data, get a chart
 
 ## Installation
 
@@ -179,13 +179,13 @@ See `example/lib/main.dart` for a complete demo with:
 
 ## Author
 
-Created by Elia Zavatta.
+Created by **Elia Zavatta**.
 
 I build production-ready Flutter apps and reusable UI components.
 
-- GitHub: https://github.com/eliazv
-- LinkedIn: https://www.linkedin.com/in/eliazavatta/
-- Email: info@eliazavatta.it
+- GitHub: [github.com/eliazv](https://github.com/eliazv)
+- LinkedIn: [linkedin.com/in/eliazavatta](https://www.linkedin.com/in/eliazavatta/)
+- Email: [info@eliazavatta.it](mailto:info@eliazavatta.it)
 
 ## Related smooth packages
 
