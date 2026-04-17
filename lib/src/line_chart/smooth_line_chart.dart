@@ -29,7 +29,7 @@ class ChartPair {
 /// ```
 class SmoothLineChart extends StatelessWidget {
   const SmoothLineChart({
-    Key? key,
+    super.key,
     required this.points,
     this.color,
     this.colors = const [],
@@ -47,7 +47,9 @@ class SmoothLineChart extends StatelessWidget {
     this.tooltipFormatter,
     this.showTooltipForAllLines = false,
     this.lineTooltipLabelBuilder,
-  }) : super(key: key);
+    this.animationDuration = const Duration(milliseconds: 2000),
+    this.animationCurve = Curves.fastLinearToSlowEaseIn,
+  });
 
   /// One inner list = one line on the chart.
   final List<List<ChartPair>> points;
@@ -88,7 +90,7 @@ class SmoothLineChart extends StatelessWidget {
   /// Format a date label on the x-axis. Defaults to "Mar 15" style.
   final String Function(DateTime date)? xLabelFormatter;
 
-  /// Format the tooltip text. Defaults to "<date>\n<value>".
+  /// Format the tooltip text. Defaults to "date + newline + value".
   /// Receives (date, value).
   final String Function(DateTime date, double value)? tooltipFormatter;
 
@@ -99,6 +101,12 @@ class SmoothLineChart extends StatelessWidget {
   /// Optional label builder used in multi-line tooltips.
   /// Defaults to "Line 1", "Line 2", ...
   final String Function(int lineIndex)? lineTooltipLabelBuilder;
+
+  /// Entrance animation duration for chart bounds and rendered lines.
+  final Duration animationDuration;
+
+  /// Entrance animation curve for chart reveal.
+  final Curve animationCurve;
 
   // ── helpers ──────────────────────────────────────────────────────────
 
@@ -230,6 +238,8 @@ class SmoothLineChart extends StatelessWidget {
           shiftDay: _shiftDay,
           showTooltipForAllLines: showTooltipForAllLines,
           lineTooltipLabelBuilder: lineTooltipLabelBuilder,
+          animationDuration: animationDuration,
+          animationCurve: animationCurve,
         ),
       ),
     );
@@ -257,6 +267,8 @@ class _LineChartInternal extends StatefulWidget {
     required this.shiftDay,
     required this.showTooltipForAllLines,
     required this.lineTooltipLabelBuilder,
+    required this.animationDuration,
+    required this.animationCurve,
   });
 
   final List<List<FlSpot>> spots;
@@ -276,6 +288,8 @@ class _LineChartInternal extends StatefulWidget {
   final DateTime Function(DateTime, int) shiftDay;
   final bool showTooltipForAllLines;
   final String Function(int lineIndex)? lineTooltipLabelBuilder;
+  final Duration animationDuration;
+  final Curve animationCurve;
 
   @override
   State<_LineChartInternal> createState() => _LineChartInternalState();
@@ -301,8 +315,8 @@ class _LineChartInternalState extends State<_LineChartInternal> {
       padding: const EdgeInsets.only(right: 15, top: 8),
       child: LineChart(
         _buildData(context),
-        duration: const Duration(milliseconds: 2000),
-        curve: Curves.fastLinearToSlowEaseIn,
+        duration: widget.animationDuration,
+        curve: widget.animationCurve,
       ),
     );
   }
@@ -388,11 +402,11 @@ class _LineChartInternalState extends State<_LineChartInternal> {
     return ExtraLinesData(
       horizontalLines: [
         if (!((minY > 0 && maxY > 0) || (minY < 0 && maxY < 0)))
-          HorizontalLine(y: 0, strokeWidth: 2, color: c.withOpacity(0.4)),
+          HorizontalLine(y: 0, strokeWidth: 2, color: c.withValues(alpha: 0.4)),
         if (widget.horizontalLineAt != null)
           HorizontalLine(
             y: widget.horizontalLineAt!,
-            color: c.withOpacity(0.7),
+            color: c.withValues(alpha: 0.7),
             dashArray: [2, 2],
           ),
       ],
@@ -401,14 +415,14 @@ class _LineChartInternalState extends State<_LineChartInternal> {
           x: 0.0001,
           dashArray: [2, 5],
           strokeWidth: 2,
-          color: c.withOpacity(0.2),
+          color: c.withValues(alpha: 0.2),
         ),
         if (widget.verticalLineAt != null)
           VerticalLine(
             x: widget.maxPair.x - widget.verticalLineAt!,
             dashArray: [2, 2],
             strokeWidth: 2,
-            color: c.withOpacity(0.7),
+            color: c.withValues(alpha: 0.7),
           ),
       ],
     );
@@ -431,10 +445,16 @@ class _LineChartInternalState extends State<_LineChartInternal> {
       horizontalInterval: double.parse(ySpan.toStringAsFixed(5)) == 0
           ? 0.001
           : (ySpan / (_isFullScreen ? 7 : 4)).abs(),
-      getDrawingVerticalLine: (_) =>
-          FlLine(color: c.withOpacity(0.2), strokeWidth: 2, dashArray: [2, 8]),
-      getDrawingHorizontalLine: (_) =>
-          FlLine(color: c.withOpacity(0.2), strokeWidth: 2, dashArray: [2, 8]),
+      getDrawingVerticalLine: (_) => FlLine(
+        color: c.withValues(alpha: 0.2),
+        strokeWidth: 2,
+        dashArray: [2, 8],
+      ),
+      getDrawingHorizontalLine: (_) => FlLine(
+        color: c.withValues(alpha: 0.2),
+        strokeWidth: 2,
+        dashArray: [2, 8],
+      ),
     );
   }
 
@@ -475,7 +495,7 @@ class _LineChartInternalState extends State<_LineChartInternal> {
                       c,
                       amount: 0.8,
                       inverse: true,
-                    ).withOpacity(0.5),
+                    ).withValues(alpha: 0.5),
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
@@ -517,7 +537,7 @@ class _LineChartInternalState extends State<_LineChartInternal> {
                       c,
                       amount: 0.5,
                       inverse: true,
-                    ).withOpacity(0.3),
+                    ).withValues(alpha: 0.3),
                   ),
                   textAlign: TextAlign.end,
                   maxLines: 1,
@@ -558,12 +578,12 @@ class _LineChartInternalState extends State<_LineChartInternal> {
         return spotIndexes.map((i) {
           final lc = shouldHide
               ? Colors.transparent
-              : (barData.color ?? widget.color).withOpacity(0.95);
+              : (barData.color ?? widget.color).withValues(alpha: 0.95);
           return TouchedSpotIndicatorData(
             FlLine(color: lc, strokeWidth: 2, dashArray: [2, 2]),
             FlDotData(
               show: true,
-              getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
+              getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
                 radius: 3,
                 color: lc,
                 strokeWidth: 2,
@@ -589,8 +609,8 @@ class _LineChartInternalState extends State<_LineChartInternal> {
       },
       touchTooltipData: LineTouchTooltipData(
         getTooltipColor: (_) => widget.showTooltipForAllLines
-            ? scheme.surface.withOpacity(0.95)
-            : widget.color.withOpacity(0.7),
+            ? scheme.surface.withValues(alpha: 0.95)
+            : widget.color.withValues(alpha: 0.7),
         tooltipRoundedRadius: 8,
         fitInsideVertically: true,
         fitInsideHorizontally: true,
@@ -617,7 +637,7 @@ class _LineChartInternalState extends State<_LineChartInternal> {
             return LineTooltipItem(
               dateLabel,
               TextStyle(
-                color: scheme.onSurface.withOpacity(0.7),
+                color: scheme.onSurface.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w600,
                 fontSize: 11,
               ),

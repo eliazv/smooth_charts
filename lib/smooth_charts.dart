@@ -1,5 +1,3 @@
-library smooth_charts;
-
 export 'src/utils/color_utils.dart';
 export 'src/utils/animation_utils.dart';
 export 'src/pie_chart/smooth_pie_chart.dart';

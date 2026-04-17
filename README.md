@@ -7,7 +7,11 @@ Beautiful animated pie and line charts for Flutter.
 
 PinWheel reveal, elastic spring animations, staggered badge labels, touch interactions and gradient fills — extracted and generalized from the [Cashew](https://github.com/jameskokoska/Cashew) budgeting app.
 
-![smooth_charts demo](assets/readme/smooth_charts_demo.gif)
+![Smooth Pie Chart](assets/readme/pie.gif)
+
+![Smooth Line Chart](assets/readme/line.gif)
+
+![Smooth Multi-line Chart](assets/readme/multi-line.gif)
 
 ## Features
 
@@ -147,6 +151,8 @@ SmoothLineChart(
 | `verticalLineAt`          | `double?`                            | —            | Dashed reference line                     |
 | `showTooltipForAllLines`  | `bool`                               | `false`      | Show one tooltip row for each line        |
 | `lineTooltipLabelBuilder` | `String Function(int)?`              | —            | Custom labels for multi-line tooltip rows |
+| `animationDuration`       | `Duration`                           | `2000ms`     | Entrance animation duration               |
+| `animationCurve`          | `Curve`                              | fastLinear…  | Entrance animation curve                  |
 | `yLabelFormatter`         | `String Function(double)?`           | compact      | Y-axis formatter                          |
 | `xLabelFormatter`         | `String Function(DateTime)?`         | "Mar 15"     | X-axis formatter                          |
 | `tooltipFormatter`        | `String Function(DateTime, double)?` | date + value | Tooltip text                              |

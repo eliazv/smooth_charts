@@ -46,14 +46,14 @@ class SmoothPieChartItem {
 /// ```
 class SmoothPieChart extends StatelessWidget {
   const SmoothPieChart({
-    Key? key,
+    super.key,
     required this.items,
     this.selectedId,
     this.onItemSelected,
     this.onItemDeselected,
     this.centerColor,
     this.largeSizeBreakpoint = 700,
-  }) : super(key: key);
+  });
 
   final List<SmoothPieChartItem> items;
 
@@ -95,7 +95,7 @@ class SmoothPieChart extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Theme.of(
                         context,
-                      ).colorScheme.secondaryContainer.withOpacity(0.3),
+                      ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
                     ),
                   )
                 : _SmoothPieChartDisplay(
@@ -113,7 +113,7 @@ class SmoothPieChart extends StatelessWidget {
               width: holeOuter,
               height: holeOuter,
               decoration: BoxDecoration(
-                color: surface.withOpacity(0.2),
+                color: surface.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
             ),
@@ -134,13 +134,13 @@ class SmoothPieChart extends StatelessWidget {
 
 class _SmoothPieChartDisplay extends StatefulWidget {
   const _SmoothPieChartDisplay({
-    Key? key,
+    super.key,
     required this.items,
     required this.isLarge,
     this.selectedId,
     this.onItemSelected,
     this.onItemDeselected,
-  }) : super(key: key);
+  });
 
   final List<SmoothPieChartItem> items;
   final bool isLarge;
@@ -201,8 +201,9 @@ class _SmoothPieChartDisplayState extends State<_SmoothPieChartDisplay> {
               setState(() {
                 if (!event.isInterestedForInteractions ||
                     response == null ||
-                    response.touchedSection == null)
+                    response.touchedSection == null) {
                   return;
+                }
 
                 final idx = response.touchedSection!.touchedSectionIndex;
                 if (event is FlTapDownEvent) {

@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 /// Clips its child with a pinwheel (rotating arc) reveal animation.
 class PinWheelReveal extends StatefulWidget {
   const PinWheelReveal({
-    Key? key,
+    super.key,
     required this.child,
     required this.duration,
     this.delay = Duration.zero,
     this.curve = Curves.easeInOutCubic,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final Duration duration;
@@ -34,8 +34,8 @@ class _PinWheelRevealState extends State<PinWheelReveal>
         Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _controller, curve: widget.curve),
         )..addListener(() {
-            setState(() => _fraction = _animation.value);
-          });
+          setState(() => _fraction = _animation.value);
+        });
     Future.delayed(widget.delay, () {
       if (mounted) _controller.forward();
     });
@@ -87,14 +87,14 @@ class _ArcClipper extends CustomClipper<Path> {
 /// Animates scale + opacity simultaneously.
 class AnimatedScaleOpacity extends StatelessWidget {
   const AnimatedScaleOpacity({
-    Key? key,
+    super.key,
     required this.child,
     required this.animateIn,
     this.duration = const Duration(milliseconds: 500),
     this.durationOpacity = const Duration(milliseconds: 100),
     this.alignment = AlignmentDirectional.center,
     this.curve = Curves.easeInOutCubicEmphasized,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final bool animateIn;
@@ -122,11 +122,11 @@ class AnimatedScaleOpacity extends StatelessWidget {
 /// AnimatedSwitcher with a scale+fade transition.
 class ScaledAnimatedSwitcher extends StatelessWidget {
   const ScaledAnimatedSwitcher({
-    Key? key,
+    super.key,
     required this.keyToWatch,
     required this.child,
     this.duration = const Duration(milliseconds: 450),
-  }) : super(key: key);
+  });
 
   final String keyToWatch;
   final Widget child;

@@ -27,8 +27,9 @@ void main() {
     expect(find.byType(SmoothPieChart), findsOneWidget);
   });
 
-  testWidgets('SmoothPieChart renders empty state when all values are zero',
-      (tester) async {
+  testWidgets('SmoothPieChart renders empty state when all values are zero', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -44,7 +45,9 @@ void main() {
     expect(find.byType(SmoothPieChart), findsOneWidget);
   });
 
-  testWidgets('SmoothPieChart accepts selectedId and callbacks', (tester) async {
+  testWidgets('SmoothPieChart accepts selectedId and callbacks', (
+    tester,
+  ) async {
     bool deselected = false;
 
     await tester.pumpWidget(
@@ -113,30 +116,36 @@ void main() {
   test('lightenPastel returns lighter color', () {
     const base = Color(0xFF0000FF);
     final lighter = lightenPastel(base, amount: 0.5);
-    expect(lighter.blue, greaterThanOrEqualTo(base.blue));
+    expect(
+      (lighter.b * 255).round().clamp(0, 255),
+      greaterThanOrEqualTo((base.b * 255).round().clamp(0, 255)),
+    );
   });
 
   test('darkenPastel returns darker color', () {
     const base = Color(0xFF8888FF);
     final darker = darkenPastel(base, amount: 0.5);
-    expect(darker.blue, lessThanOrEqualTo(base.blue));
+    expect(
+      (darker.b * 255).round().clamp(0, 255),
+      lessThanOrEqualTo((base.b * 255).round().clamp(0, 255)),
+    );
   });
 
   test('HexColor parses 6-digit hex', () {
     final c = HexColor('#FF5733');
-    expect(c.red, 0xFF);
-    expect(c.green, 0x57);
-    expect(c.blue, 0x33);
+    expect((c.r * 255).round().clamp(0, 255), 0xFF);
+    expect((c.g * 255).round().clamp(0, 255), 0x57);
+    expect((c.b * 255).round().clamp(0, 255), 0x33);
   });
 
   test('HexColor parses 8-digit hex with alpha', () {
     final c = HexColor('FFFF5733');
-    expect(c.red, 0xFF);
-    expect(c.green, 0x57);
+    expect((c.r * 255).round().clamp(0, 255), 0xFF);
+    expect((c.g * 255).round().clamp(0, 255), 0x57);
   });
 
   test('HexColor returns fallback for null', () {
     final c = HexColor(null, defaultColor: Colors.grey);
-    expect(c.value, Colors.grey.value);
+    expect(c.toARGB32(), Colors.grey.toARGB32());
   });
 }
