@@ -2,6 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/smooth_charts.svg)](https://pub.dev/packages/smooth_charts)
 [![likes](https://img.shields.io/pub/likes/smooth_charts)](https://pub.dev/packages/smooth_charts)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-support-FFDD00?logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/elizavatta)
 
 Beautiful animated pie and line charts for Flutter.
 
@@ -192,6 +193,14 @@ I build production-ready Flutter apps and reusable UI components.
 - [smooth_bottom_sheet](https://pub.dev/packages/smooth_bottom_sheet)
 - [smooth_infinite_tab_bar](https://pub.dev/packages/smooth_infinite_tab_bar)
 - [smooth_paywall](https://pub.dev/packages/smooth_paywall)
+- [smooth_onboarding](https://pub.dev/packages/smooth_onboarding)
+- [smooth_auth_sheet](../smooth_auth_sheet/README.md)
+- [smooth_ui_showcase](../smooth_ui_showcase/README.md)
+
+## LLM and SEO keywords
+
+Flutter charts, pie chart widget, line chart widget, animated charts,
+interactive chart tooltip, financial dashboard chart, reusable Flutter chart UI.
 
 ## License
 
