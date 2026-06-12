@@ -2,9 +2,12 @@
 
 [![pub package](https://img.shields.io/pub/v/smooth_charts.svg)](https://pub.dev/packages/smooth_charts)
 [![likes](https://img.shields.io/pub/likes/smooth_charts)](https://pub.dev/packages/smooth_charts)
+[![Live demo](https://img.shields.io/badge/Live-demo-2ea44f?logo=flutter&logoColor=white)](https://eliazv.github.io/smooth_charts/)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-support-FFDD00?logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/elizavatta)
 
 Beautiful animated pie and line charts for Flutter.
+
+👉 **[Try the live demo](https://eliazv.github.io/smooth_charts/)** — play with the animated charts in your browser.
 
 PinWheel reveal, elastic spring animations, staggered badge labels, touch interactions and gradient fills.
 
@@ -20,7 +23,7 @@ Most chart libraries give you low-level primitives. `smooth_charts` gives you:
 
 - Production-ready visual defaults matching modern finance app aesthetics
 - Animations that match the quality bar of native apps
-- Clean widget API — pass your data, get a chart
+- Clean widget API: pass your data, get a chart
 
 ## Features
 
@@ -39,7 +42,7 @@ Most chart libraries give you low-level primitives. `smooth_charts` gives you:
 
 ```yaml
 dependencies:
-  smooth_charts: ^0.0.1
+  smooth_charts: ^0.0.3
 ```
 
 ## Pie chart
@@ -74,11 +77,11 @@ SmoothPieChart(
 ```dart
 SmoothPieChart(
   items: items,
-  selectedId: _selectedId,          // control highlight from outside
+  selectedId: _selectedId,
   onItemSelected: (id, _) => setState(() => _selectedId = id),
   onItemDeselected: () => setState(() => _selectedId = null),
   centerColor: Theme.of(context).colorScheme.surface,
-  largeSizeBreakpoint: 700,         // renders larger above this width
+  largeSizeBreakpoint: 700,
 )
 ```
 
@@ -108,7 +111,7 @@ SmoothLineChart(
   colors: [Colors.teal, Colors.deepOrange],
   showTooltipForAllLines: true,
   lineTooltipLabelBuilder: (i) => i == 0 ? 'Current' : 'Projection',
-  horizontalLineAt: 500,           // dashed budget/target line
+  horizontalLineAt: 500,
   keepHorizontalLineInView: true,
   yLabelFormatter: (v) => '\$${v.toStringAsFixed(0)}',
   tooltipFormatter: (date, value) =>
@@ -133,40 +136,37 @@ SmoothLineChart(
 | Parameter             | Type                                         | Default  | Description                   |
 | --------------------- | -------------------------------------------- | -------- | ----------------------------- |
 | `items`               | `List<SmoothPieChartItem>`                   | required | Chart data                    |
-| `selectedId`          | `String?`                                    | —        | Controlled highlight          |
-| `onItemSelected`      | `void Function(String, SmoothPieChartItem)?` | —        | Tap callback                  |
-| `onItemDeselected`    | `void Function()?`                           | —        | Deselect callback             |
+| `selectedId`          | `String?`                                    | -        | Controlled highlight          |
+| `onItemSelected`      | `void Function(String, SmoothPieChartItem)?` | -        | Tap callback                  |
+| `onItemDeselected`    | `void Function()?`                           | -        | Deselect callback             |
 | `centerColor`         | `Color?`                                     | surface  | Center hole fill              |
 | `largeSizeBreakpoint` | `double`                                     | `700`    | Width to render large variant |
 
 ### `SmoothLineChart`
 
-| Parameter                 | Type                                 | Default      | Description                               |
-| ------------------------- | ------------------------------------ | ------------ | ----------------------------------------- |
-| `points`                  | `List<List<ChartPair>>`              | required     | One list per line                         |
-| `color`                   | `Color?`                             | primary      | Primary line color                        |
-| `colors`                  | `List<Color>`                        | `[]`         | Per-line colors                           |
-| `isCurved`                | `bool`                               | `false`      | Smooth bezier curves                      |
-| `endDate`                 | `DateTime?`                          | now          | Reference for x-axis labels               |
-| `horizontalLineAt`        | `double?`                            | —            | Dashed reference line                     |
-| `verticalLineAt`          | `double?`                            | —            | Dashed reference line                     |
-| `showTooltipForAllLines`  | `bool`                               | `false`      | Show one tooltip row for each line        |
-| `lineTooltipLabelBuilder` | `String Function(int)?`              | —            | Custom labels for multi-line tooltip rows |
-| `animationDuration`       | `Duration`                           | `2000ms`     | Entrance animation duration               |
-| `animationCurve`          | `Curve`                              | fastLinear…  | Entrance animation curve                  |
-| `yLabelFormatter`         | `String Function(double)?`           | compact      | Y-axis formatter                          |
-| `xLabelFormatter`         | `String Function(DateTime)?`         | "Mar 15"     | X-axis formatter                          |
-| `tooltipFormatter`        | `String Function(DateTime, double)?` | date + value | Tooltip text                              |
+| Parameter                 | Type                                 | Default                    | Description                               |
+| ------------------------- | ------------------------------------ | -------------------------- | ----------------------------------------- |
+| `points`                  | `List<List<ChartPair>>`              | required                   | One list per line                         |
+| `color`                   | `Color?`                             | primary                    | Primary line color                        |
+| `colors`                  | `List<Color>`                        | `[]`                       | Per-line colors                           |
+| `isCurved`                | `bool`                               | `false`                    | Smooth bezier curves                      |
+| `endDate`                 | `DateTime?`                          | now                        | Reference for x-axis labels               |
+| `horizontalLineAt`        | `double?`                            | -                          | Dashed reference line                     |
+| `verticalLineAt`          | `double?`                            | -                          | Dashed reference line                     |
+| `showTooltipForAllLines`  | `bool`                               | `false`                    | Show one tooltip row for each line        |
+| `lineTooltipLabelBuilder` | `String Function(int)?`              | -                          | Custom labels for multi-line tooltip rows |
+| `animationDuration`       | `Duration`                           | `2000ms`                   | Entrance animation duration               |
+| `animationCurve`          | `Curve`                              | `fastLinearToSlowEaseIn`   | Entrance animation curve                  |
+| `yLabelFormatter`         | `String Function(double)?`           | compact                    | Y-axis formatter                          |
+| `xLabelFormatter`         | `String Function(DateTime)?`         | `"Mar 15"`                 | X-axis formatter                          |
+| `tooltipFormatter`        | `String Function(DateTime, double)?` | date + value               | Tooltip text                              |
 
 ## Utilities
 
 `smooth_charts` also exports its color utilities:
 
 ```dart
-// Lighten/darken respecting light/dark theme
 Color result = dynamicPastel(context, Colors.blue, amountLight: 0.3);
-
-// Parse hex color strings
 Color c = HexColor('#FF5733');
 ```
 
@@ -194,8 +194,8 @@ I build production-ready Flutter apps and reusable UI components.
 - [smooth_infinite_tab_bar](https://pub.dev/packages/smooth_infinite_tab_bar)
 - [smooth_paywall](https://pub.dev/packages/smooth_paywall)
 - [smooth_onboarding](https://pub.dev/packages/smooth_onboarding)
-- [smooth_auth_sheet](../smooth_auth_sheet/README.md)
-- [smooth_ui_showcase](../smooth_ui_showcase/README.md)
+- [smooth_auth_sheet](https://pub.dev/packages/smooth_auth_sheet)
+- [smooth_toast](https://pub.dev/packages/smooth_toast)
 
 ## LLM and SEO keywords
 
